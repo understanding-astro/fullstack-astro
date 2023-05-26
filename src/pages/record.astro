@@ -1,0 +1,16 @@
+---
+import Container from "../components/Container.astro";
+import H1 from "../components/H1.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Recorder } from "../components/AudioRecorder.jsx";
+---
+
+<BaseLayout isPrivatePage>
+  <Container>
+    <H1>Let your voice be heard</H1>
+    <p class="text-lg dark:text-slate-200 pb-7 pt-1">Simply hit record.</p>
+    <div class="flex justify-center">
+      <Recorder client:load />
+    </div>
+  </Container>
+</BaseLayout>
