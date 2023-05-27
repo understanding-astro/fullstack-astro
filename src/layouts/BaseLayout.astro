@@ -30,7 +30,18 @@ const { isPrivatePage = false } = Astro.props;
         isPrivatePage && (
           <>
             <a class="ml-auto mr-6 dark:text-primary-100" href="/record">
-              Record
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-[30px] mx-auto"
+              >
+                <path
+                  d="M8 12.5a4.5 4.5 0 1 0 0-9.002A4.5 4.5 0 0 0 8 12.5ZM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8Z"
+                  fill="currentcolor"
+                />
+              </svg>
+              <span>Record</span>
             </a>
             <Button id="sign-out-button">Sign out</Button>
           </>
@@ -56,6 +67,7 @@ const { isPrivatePage = false } = Astro.props;
         window.location.href = "/signin";
       } catch (error) {
         signoutButton.disabled = false;
+        alert(error);
       }
     });
   }

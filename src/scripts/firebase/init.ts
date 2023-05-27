@@ -22,7 +22,7 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 /**
- * For local testing add authentication + database emulator
+ * For local testing add authentication emulator
  */
 if (import.meta.env.DEV) {
   connectAuthEmulator(auth, "http://localhost:9098");

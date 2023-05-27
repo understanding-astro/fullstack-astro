@@ -1,31 +1,43 @@
-import { useState } from "react";
+import { useStore } from "@nanostores/react";
 import { VoiceRecorder } from "react-voice-recorder-player";
-
-type State = {
-  blob: Blob;
-};
+import { $audioRecording, uploadRecording } from "@stores/audioRecording";
 
 export const Recorder = () => {
-  const [state, setState] = useState<Partial<State>>({});
+  const state = useStore($audioRecording);
 
-  return (
-    <div className="flex flex-col">
-      <VoiceRecorder
-        onAudioDownload={(blob: Blob) => {
-          setState({ blob });
-        }}
-      />
+  switch (state.status) {
+    case "idle":
+      return (
+        <VoiceRecorder
+          onAudioDownload={(blob: Blob) => uploadRecording(blob)}
+        />
+      );
 
-      {state.blob && (
-        <div>
-          <button
-            className="mt-10 ext-white  hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2  dark:hover:bg-blue-700 dark:focus:ring-blue-800 
-          dark:text-white dark:hover:text-white hover:text-white"
-          >
-            Upload Recording
-          </button>
+    case "uploading":
+      return (
+        <div className="flex items-center justify-center w-56 h-56 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+          <div className="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
+            Uploading ...
+          </div>
         </div>
-      )}
-    </div>
-  );
+      );
+
+    case "failed":
+      return (
+        <div className="bg-red-400 rounded-md py-6 px-3 text-slate-100 motion-safe:animate-bounce">
+          An error occurred uploading your recording
+        </div>
+      );
+
+    case "completed":
+      return (
+        <div className="bg-green-400 rounded-md py-6 px-3 text-slate-100 motion-safe:animate-bounce">
+          Successfully published your recording!
+        </div>
+      );
+
+    default:
+      const _exhaustiveCheck: never = state;
+      return _exhaustiveCheck;
+  }
 };
