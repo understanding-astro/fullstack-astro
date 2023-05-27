@@ -16,7 +16,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           >
             Sign in to your account
           </h1>
-          <form class="space-y-4 md:space-y-6" action="#">
+          <form class="space-y-4 md:space-y-6" action="#" id="signin-form">
             <div>
               <label
                 for="email"
@@ -66,3 +66,66 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  import {
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+  } from "firebase/auth";
+  import Validator from "validator.tool";
+  import { auth } from "@scripts/firebase/init";
+  import { authClientValidationRules } from "@scripts/authClientValidationRules";
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window.location.href = "/";
+    }
+  });
+
+  type FormValues = {
+    email?: string;
+    password?: string;
+  };
+
+  const form = document.getElementById("signin-form") as HTMLFormElement | null;
+  const submitButton = document.querySelector(
+    "#signin-form button[type='submit']"
+  ) as HTMLButtonElement | null;
+
+  const validator = new Validator({
+    form,
+    rules: authClientValidationRules,
+  });
+
+  if (validator.form) {
+    validator.form.onsubmit = async (evt) => {
+      evt.preventDefault();
+
+      const errors = validator.errorMessages;
+      const values = validator.getValues() as FormValues;
+
+      if (Object.keys(errors).length > 0) {
+        const errorMessages = Object.values(errors).join("...and...");
+        return alert(errorMessages);
+      }
+
+      const { email, password } = values as Required<FormValues>;
+
+      if (!submitButton) {
+        return alert("Missing form button");
+      }
+
+      try {
+        submitButton.innerText = "Submitting";
+        submitButton.disabled = true;
+
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        submitButton.innerText = "Signin";
+        submitButton.disabled = false;
+
+        alert(error);
+      }
+    };
+  }
+</script>

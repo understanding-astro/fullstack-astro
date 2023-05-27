@@ -75,6 +75,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     onAuthStateChanged,
   } from "firebase/auth";
   import { auth } from "@scripts/firebase/init";
+  import { authClientValidationRules } from "@scripts/authClientValidationRules";
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -94,30 +95,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   const validator = new Validator({
     form,
-    rules: {
-      email: {
-        validate: (val: FormValues["email"] = "") =>
-          val.includes("@") ? "" : "Please check your email address format",
-      },
-      password: {
-        validate: (val: FormValues["password"] = "") =>
-          val.length < 6 ? "Your password is too short" : "",
-      },
-    },
+    rules: authClientValidationRules,
   });
 
   if (validator.form) {
     validator.form.onsubmit = async (evt) => {
       evt.preventDefault();
-      console.log(validator.getValues());
+
       const errors = validator.errorMessages;
+      const values = validator.getValues() as FormValues;
 
       if (Object.keys(errors).length > 0) {
         const errorMessages = Object.values(errors).join("...and...");
         return alert(errorMessages);
       }
 
-      const { email, password } = validator.getValues() as Required<FormValues>;
+      const { email, password } = values as Required<FormValues>;
 
       if (!submitButton) {
         return alert("Missing form button");

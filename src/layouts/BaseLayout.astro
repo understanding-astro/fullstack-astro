@@ -32,7 +32,7 @@ const { isPrivatePage = false } = Astro.props;
             <a class="ml-auto mr-6 dark:text-primary-100" href="/record">
               Record
             </a>
-            <Button>Sign out</Button>
+            <Button id="sign-out-button">Sign out</Button>
           </>
         )
       }
@@ -40,3 +40,23 @@ const { isPrivatePage = false } = Astro.props;
     <slot />
   </body>
 </html>
+
+<script>
+  import { auth } from "@scripts/firebase/init";
+
+  const signoutButton = document.getElementById("sign-out-button") as
+    | HTMLButtonElement
+    | undefined;
+
+  if (signoutButton) {
+    signoutButton.addEventListener("click", async () => {
+      try {
+        signoutButton.disabled = true;
+        await auth.signOut();
+        window.location.href = "/signin";
+      } catch (error) {
+        signoutButton.disabled = false;
+      }
+    });
+  }
+</script>
