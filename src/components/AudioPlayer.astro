@@ -1,3 +1,14 @@
+---
+import { simpleISOStringParser } from "@scripts/simpleISOStringParser";
+
+type Props = {
+  url: string;
+  timeCreated: string;
+};
+
+const { url, timeCreated } = Astro.props;
+---
+
 <div
   class="bg-white border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700 flex max-w-max my-6 items-center px-12"
 >
@@ -8,8 +19,10 @@
 
     <figure class="flex flex-col max-w-max dark:text-slate-300">
       <figcaption class="opacity-80 pb-1">Listen:</figcaption>
-      <audio controls src=""> </audio>
-      <span class="opacity-50 block py-2">Audibled <i>5 mins ago</i></span>
+      <audio controls src={url}> </audio>
+      <span class="opacity-50 block py-2"
+        >Audibled at <i>{simpleISOStringParser(timeCreated)}</i></span
+      >
     </figure>
   </div>
 </div>

@@ -2,7 +2,11 @@ import { useStore } from "@nanostores/react";
 import { VoiceRecorder } from "react-voice-recorder-player";
 import { $audioRecording, uploadRecording } from "@stores/audioRecording";
 
-export const Recorder = () => {
+type Props = {
+  cta?: string;
+};
+
+export const Recorder = (props: Props) => {
   const state = useStore($audioRecording);
 
   switch (state.status) {
@@ -13,12 +17,7 @@ export const Recorder = () => {
             onAudioDownload={(blob: Blob) => uploadRecording(blob)}
           />
 
-          <a
-            href="/"
-            className="dark:text-slate-50 px-4  mt-12 rounded-2xl inline-block bg-purple-600"
-          >
-            View Audibles
-          </a>
+          {props.cta}
         </div>
       );
 

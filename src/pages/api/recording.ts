@@ -2,8 +2,7 @@ import type { APIRoute } from "astro";
 import { nanoid } from "nanoid";
 import { getStorage } from "firebase-admin/storage";
 import { serverApp } from "@scripts/firebase/initServer";
-
-const BUCKET_NAME = "gs://be-audible.appspot.com";
+import { BUCKET_NAME } from "@constants/firebase";
 
 export const post: APIRoute = async (ctx) => {
   try {
@@ -14,7 +13,8 @@ export const post: APIRoute = async (ctx) => {
 
     // convert Blob to native Node Buffer for server storage
     const buffer = Buffer.from(await blob.arrayBuffer());
-    const file = bucket.file(`recording-${Date.now()}-${nanoid()}.wav`);
+    const file = bucket.file(`recording-${nanoid()}.wav`);
+
     await file.save(buffer);
 
     return {

@@ -72,18 +72,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <script>
   import Validator from "validator.tool";
-  import {
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
-  } from "firebase/auth";
+  import { createUserWithEmailAndPassword } from "firebase/auth";
   import { auth } from "@scripts/firebase/init";
   import { authClientValidationRules } from "@scripts/authClientValidationRules";
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      window.location.href = "/";
-    }
-  });
 
   type FormValues = {
     email?: string;
@@ -122,7 +113,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         submitButton.innerText = "Submitting";
         submitButton.disabled = true;
 
-        await createUserWithEmailAndPassword(auth, email, password);
+        const { user } = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const token = await user.getIdToken();
+        window.location.href = `/?token=${token}`;
       } catch (error) {
         submitButton.innerText = "Signup";
         submitButton.disabled = false;

@@ -1,23 +1,25 @@
 ---
+import H1 from "../components/H1.astro";
 import AudioPlayer from "../components/AudioPlayer.astro";
 import Container from "../components/Container.astro";
-import H1 from "../components/H1.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const audibles = new Array(10).fill(1);
-
 import { getAuth } from "firebase-admin/auth";
-import { serverApp } from "@scripts/firebase/initServer";
+import { getStorage } from "firebase-admin/storage";
 
-/**
- * When a user or device successfully signs in, Firebase creates a corresponding ID token that uniquely identifies them and grants them access to several resources, such as Firebase Realtime Database and Cloud Storage. You can re-use that ID token to identify the user or device on your custom backend server.
- * NB:  Firebase ID tokens are short lived and last for an hour
- */
+import { TOKEN } from "@constants/cookies";
+import { BUCKET_NAME } from "@constants/firebase";
+import { serverApp } from "@scripts/firebase/initServer";
+import Empty from "@components/Empty.astro";
+import LinkCTA from "@components/LinkCTA.astro";
+
+const storage = getStorage(serverApp);
 
 // Get client token
 const url = new URL(Astro.request.url);
 const urlTokenParam = url.searchParams.get("token");
-const cookieToken = Astro.cookies.get("X-Token");
+
+const cookieToken = Astro.cookies.get(TOKEN);
 const token = urlTokenParam || cookieToken.value;
 
 if (!token) {
@@ -26,16 +28,42 @@ if (!token) {
 }
 
 const auth = getAuth(serverApp);
+let audibles: { url: string; timeCreated: string }[] = [];
 
 try {
   await auth.verifyIdToken(token);
 
-  Astro.cookies.set("X-Token", token, {
+  Astro.cookies.set(TOKEN, token, {
     path: "/",
     httpOnly: true,
   });
+
+  try {
+    // get all files
+    const bucket = storage.bucket(BUCKET_NAME);
+    const [files] = await bucket.getFiles();
+
+    audibles = await Promise.all(
+      files.map(async (file) => {
+        const [metadata] = await file.getMetadata();
+
+        return {
+          url: file.publicUrl(),
+          timeCreated: metadata.timeCreated,
+        };
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    console.error("Error fetching audibles");
+    return Astro.redirect("/signin");
+  }
 } catch (error) {
-  console.error("Could not decode token");
+  console.error("Could not decode token", {
+    fromCookie: !!cookieToken.value,
+    fromUrl: !!urlTokenParam,
+  });
+
   return Astro.redirect("/signin");
 }
 ---
@@ -48,7 +76,25 @@ try {
     </p>
 
     <div class="flex flex-col items-center">
-      {audibles.map(() => <AudioPlayer />)}
+      {
+        audibles.length === 0 ? (
+          <>
+            <Empty />
+            <LinkCTA href="/record">Record</LinkCTA>
+          </>
+        ) : (
+          audibles
+            .sort((a, b) =>
+              new Date(a.timeCreated) < new Date(b.timeCreated) ? 1 : -1
+            )
+            .map((audible) => (
+              <AudioPlayer
+                url={audible.url}
+                timeCreated={audible.timeCreated}
+              />
+            ))
+        )
+      }
     </div>
   </Container>
 </BaseLayout>

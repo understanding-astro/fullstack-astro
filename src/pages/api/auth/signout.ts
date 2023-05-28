@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
+import { TOKEN } from "@constants/cookies";
 
 export const post: APIRoute = (ctx) => {
-  ctx.cookies.delete("X-Token", {
+  ctx.cookies.delete(TOKEN, {
     path: "/",
   });
 
