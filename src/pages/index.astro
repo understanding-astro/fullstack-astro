@@ -5,6 +5,39 @@ import H1 from "../components/H1.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const audibles = new Array(10).fill(1);
+
+import { getAuth } from "firebase-admin/auth";
+import { serverApp } from "@scripts/firebase/initServer";
+
+/**
+ * When a user or device successfully signs in, Firebase creates a corresponding ID token that uniquely identifies them and grants them access to several resources, such as Firebase Realtime Database and Cloud Storage. You can re-use that ID token to identify the user or device on your custom backend server.
+ * NB:  Firebase ID tokens are short lived and last for an hour
+ */
+
+// Get client token
+const url = new URL(Astro.request.url);
+const urlTokenParam = url.searchParams.get("token");
+const cookieToken = Astro.cookies.get("X-Token");
+const token = urlTokenParam || cookieToken.value;
+
+if (!token) {
+  // Unauthorised user
+  return Astro.redirect("/signin");
+}
+
+const auth = getAuth(serverApp);
+
+try {
+  await auth.verifyIdToken(token);
+
+  Astro.cookies.set("X-Token", token, {
+    path: "/",
+    httpOnly: true,
+  });
+} catch (error) {
+  console.error("Could not decode token");
+  return Astro.redirect("/signin");
+}
 ---
 
 <BaseLayout isPrivatePage>
@@ -19,3 +52,15 @@ const audibles = new Array(10).fill(1);
     </div>
   </Container>
 </BaseLayout>
+
+<script>
+  // Enhancement: remove token from URL after page's parsed.
+  const url = new URL(window.location.href);
+  const urlTokenParam = url.searchParams.get("token");
+
+  if (urlTokenParam) {
+    url.searchParams.delete("token");
+
+    window.history.pushState({}, "", url.href);
+  }
+</script>

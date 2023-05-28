@@ -8,9 +8,18 @@ export const Recorder = () => {
   switch (state.status) {
     case "idle":
       return (
-        <VoiceRecorder
-          onAudioDownload={(blob: Blob) => uploadRecording(blob)}
-        />
+        <div>
+          <VoiceRecorder
+            onAudioDownload={(blob: Blob) => uploadRecording(blob)}
+          />
+
+          <a
+            href="/"
+            className="dark:text-slate-50 px-4  mt-12 rounded-2xl inline-block bg-purple-600"
+          >
+            View Audibles
+          </a>
+        </div>
       );
 
     case "uploading":

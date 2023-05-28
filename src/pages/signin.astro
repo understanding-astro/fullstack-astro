@@ -78,9 +78,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   import { auth } from "@scripts/firebase/init";
   import { authClientValidationRules } from "@scripts/authClientValidationRules";
 
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
-      window.location.href = "/";
+      const token = await user.getIdToken();
+      window.location.href = `/?token=${token}`;
     }
   });
 
