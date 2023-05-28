@@ -1,17 +1,34 @@
 ---
-import H1 from "../components/H1.astro";
-import AudioPlayer from "../components/AudioPlayer.astro";
-import Container from "../components/Container.astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
+import H1 from "@components/H1.astro";
+import { TOKEN } from "@constants/cookies";
+import Empty from "@components/Empty.astro";
+import LinkCTA from "@components/LinkCTA.astro";
+import { BUCKET_NAME } from "@constants/firebase";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/Container.astro";
+import AudioPlayer from "@components/AudioPlayer.astro";
+import { serverApp } from "@scripts/firebase/initServer";
 
 import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 
-import { TOKEN } from "@constants/cookies";
-import { BUCKET_NAME } from "@constants/firebase";
-import { serverApp } from "@scripts/firebase/initServer";
-import Empty from "@components/Empty.astro";
-import LinkCTA from "@components/LinkCTA.astro";
+type Audible = { url: string; timeCreated: string };
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const feedback = data.get("feedback");
+
+    // do something with data
+    console.log({ feedback });
+
+    // Do something with the data
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
 
 const storage = getStorage(serverApp);
 
@@ -28,7 +45,7 @@ if (!token) {
 }
 
 const auth = getAuth(serverApp);
-let audibles: { url: string; timeCreated: string }[] = [];
+let audibles: Audible[] = [];
 
 try {
   await auth.verifyIdToken(token);
