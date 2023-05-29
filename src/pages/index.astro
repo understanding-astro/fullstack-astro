@@ -52,6 +52,7 @@ try {
 
   Astro.cookies.set(TOKEN, token, {
     path: "/",
+    secure: true,
     httpOnly: true,
   });
 
