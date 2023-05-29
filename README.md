@@ -24,5 +24,6 @@ All commands are run from the root of the project, from a terminal:
 
 ## 👀 Note
 
-- Checkout to the `clean-slate` branch to code along or start afresh.
-- Building the application is covered in Chapter 8 of the book
+- Complete application lives in the `master` branch i.e., `git checkout master`
+- Checkout to the `clean-slate` branch to code along or start afresh i.e., `git checkout clean-slate`
+- Building the application is covered in Chapter 8 of [the book](https://github.com/understanding-astro/understanding-astro-book)
