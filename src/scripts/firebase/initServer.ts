@@ -21,7 +21,6 @@ export const serviceAccount = {
  */
 if (import.meta.env.DEV) {
   process.env.FIREBASE_STORAGE_EMULATOR_HOST = "localhost:3005";
-
   process.env.FIREBASE_AUTH_EMULATOR_HOST = "localhost:9098";
 }
 

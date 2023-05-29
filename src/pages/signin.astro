@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
 ---
 
 <BaseLayout>
@@ -68,64 +68,3 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 </BaseLayout>
-
-<script>
-  import { signInWithEmailAndPassword } from "firebase/auth";
-  import Validator from "validator.tool";
-  import { auth } from "@scripts/firebase/init";
-  import { authClientValidationRules } from "@scripts/authClientValidationRules";
-
-  type FormValues = {
-    email?: string;
-    password?: string;
-  };
-
-  const form = document.getElementById("signin-form") as HTMLFormElement | null;
-  const submitButton = document.querySelector(
-    "#signin-form button[type='submit']"
-  ) as HTMLButtonElement | null;
-
-  const validator = new Validator({
-    form,
-    rules: authClientValidationRules,
-  });
-
-  if (validator.form) {
-    validator.form.onsubmit = async (evt) => {
-      evt.preventDefault();
-
-      const errors = validator.errorMessages;
-      const values = validator.getValues() as FormValues;
-
-      if (Object.keys(errors).length > 0) {
-        const errorMessages = Object.values(errors).join("...and...");
-        return alert(errorMessages);
-      }
-
-      const { email, password } = values as Required<FormValues>;
-
-      if (!submitButton) {
-        return alert("Missing form button");
-      }
-
-      try {
-        submitButton.innerText = "Submitting";
-        submitButton.disabled = true;
-
-        const { user } = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        const token = await user.getIdToken();
-        window.location.href = `/?token=${token}`;
-      } catch (error) {
-        submitButton.innerText = "Signin";
-        submitButton.disabled = false;
-
-        alert(error);
-      }
-    };
-  }
-</script>

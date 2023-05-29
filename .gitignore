@@ -11,6 +11,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+# firebase logs
+firebase-debug.log
+ui-debug.log 
 
 
 # environment variables
@@ -20,7 +23,5 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-
-#firebase 
-firebase-debug.log
-ui-debug.log 
+# code editor files 
+.vscode 
