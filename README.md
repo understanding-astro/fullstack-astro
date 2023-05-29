@@ -6,7 +6,7 @@
 
 <br />
 
-![Understanding Astro](https://i.imgur.com/ilBnSBp.png)
+![Understanding Astro](https://i.imgur.com/TfaKFNR.png)
 
 <br />
 <br />
