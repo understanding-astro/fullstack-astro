@@ -24,6 +24,18 @@ if (import.meta.env.DEV) {
   process.env.FIREBASE_AUTH_EMULATOR_HOST = "localhost:9098";
 }
 
-export const serverApp = initializeApp({
-  credential: cert(serviceAccount as ServiceAccount),
-});
+let app: ReturnType<typeof initializeApp>;
+
+const getServerApp = () => {
+  if (app || admin.apps.length) {
+    return app;
+  }
+
+  app = initializeApp({
+    credential: cert(serviceAccount as ServiceAccount),
+  });
+
+  return app;
+};
+
+export const serverApp = getServerApp();
