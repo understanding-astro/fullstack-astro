@@ -13,7 +13,7 @@ export const post: APIRoute = async (ctx) => {
     body: JSON.stringify({
       error: "Unauthenticated user",
     }),
-    status: 500,
+    status: 401,
     ok: false,
   };
 
