@@ -1,10 +1,34 @@
 import type { APIRoute } from "astro";
 import { nanoid } from "nanoid";
+import { TOKEN } from "@constants/cookies";
+import { getAuth } from "firebase-admin/auth";
+import { BUCKET_NAME } from "@constants/firebase";
 import { getStorage } from "firebase-admin/storage";
 import { serverApp } from "@scripts/firebase/initServer";
-import { BUCKET_NAME } from "@constants/firebase";
+
+const auth = getAuth(serverApp);
 
 export const post: APIRoute = async (ctx) => {
+  const authUserError = {
+    body: JSON.stringify({
+      error: "Unauthenticated user",
+    }),
+    status: 500,
+    ok: false,
+  };
+
+  try {
+    const authToken = ctx.cookies.get(TOKEN).value;
+
+    if (!authToken) {
+      return authUserError;
+    }
+
+    await auth.verifyIdToken(authToken);
+  } catch (error) {
+    return authUserError;
+  }
+
   try {
     const blob = await ctx.request.blob();
 
