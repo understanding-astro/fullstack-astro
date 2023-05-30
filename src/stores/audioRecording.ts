@@ -42,12 +42,6 @@ export const uploadRecording = async (blob: Blob) => {
     });
 
     if (response.ok) {
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error("Failed to upload recording");
-      }
-
       $audioRecording.set({
         status: "completed",
         blob,
