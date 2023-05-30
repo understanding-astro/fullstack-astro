@@ -14,11 +14,5 @@ export const post: APIRoute = (ctx) => {
 export const all: APIRoute = async (ctx) => {
   const method = ctx.request.method;
 
-  return {
-    body: JSON.stringify({
-      method,
-      message: "Unsupported HTTP method",
-    }),
-    status: 501,
-  };
+  return new Response(`Unsupported HTTP method ${method}`, { status: 501 });
 };
